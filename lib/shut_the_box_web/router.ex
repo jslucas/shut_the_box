@@ -17,7 +17,7 @@ defmodule ShutTheBoxWeb.Router do
   scope "/", ShutTheBoxWeb do
     pipe_through :browser
 
-    get "/", PageController, :home
+    live "/", HomeLive
   end
 
   # Other scopes may use custom stacks.
