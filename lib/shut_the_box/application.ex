@@ -17,7 +17,8 @@ defmodule ShutTheBox.Application do
       # Start a worker by calling: ShutTheBox.Worker.start_link(arg)
       # {ShutTheBox.Worker, arg},
       # Start to serve requests, typically the last entry
-      ShutTheBoxWeb.Endpoint
+      ShutTheBoxWeb.Endpoint,
+      ShutTheBox.Game.Supervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
