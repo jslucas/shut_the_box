@@ -1,10 +1,12 @@
 defmodule ShutTheBoxWeb.HomeLive do
+  alias ShutTheBox.Game.{Supervisor, Utils}
   use ShutTheBoxWeb, :live_view
 
   def render(assigns) do
     ~H"""
     <div class="bg-blue-50 px-4 py-10 sm:px-6 sm:py-28 lg:px-8 xl:px-28 xl:py-16 divide-y divide-gray-300/50">
-      <div class=" bg-white shadow-2xl mx-auto max-w-3xl p-2 grid grid-cols-2"> <div class="flex items-center justify-self-start h-full text-xl">
+      <div class=" bg-white shadow-2xl mx-auto max-w-3xl p-2 grid grid-cols-2">
+        <div class="flex items-center justify-self-start h-full text-xl">
           Welcome to Shut the Box
         </div>
 
@@ -19,7 +21,7 @@ defmodule ShutTheBoxWeb.HomeLive do
       </div>
       <div class="bg-white shadow-lg mx-auto max-w-3xl pb-6 ">
         <div class="mx-auto max-w-xl">
-          <.simple_form for={@form} phx-change="form_update" phx-submit="create_game">
+          <.simple_form for={@form} phx-update="ignore" phx-submit="create_game">
             <.input field={@form[:name]} label="Name" />
             <:actions>
               <.button>Create Game</.button>
@@ -31,13 +33,9 @@ defmodule ShutTheBoxWeb.HomeLive do
     """
   end
 
-  def handle_event("form_update", %{"name" => name}, socket) do
-    {:noreply, assign(socket, :form, to_form(%{"name" => name}))}
-  end
-
-  def handle_event("create_game", %{"name" => name}, socket) do
-    # {:ok, slug} = Call Supervisor to start GameServer
-    # redirect
+  def handle_event("create_game", %{"name" => _name}, socket) do
+    game_code = Utils.generate_game_code()
+    {:ok, _pid} = Supervisor.start_game(game_code)
 
     {:noreply, socket}
   end
