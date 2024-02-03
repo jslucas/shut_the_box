@@ -21,23 +21,16 @@ defmodule ShutTheBoxWeb.HomeLive do
       </div>
       <div class="bg-white shadow-lg mx-auto max-w-3xl pb-6 ">
         <div class="mx-auto max-w-xl">
-          <.simple_form for={@form} phx-update="ignore" phx-submit="create_game">
-            <.input field={@form[:name]} label="Name" />
+          <.simple_form for={@form} phx-update="ignore" action={~p"/game/create"}>
+            <.input field={@form[:name]} label="Name" required />
             <:actions>
-              <.button>Create Game</.button>
+              <.button phx-disable-with="Creating game...">Create Game</.button>
             </:actions>
           </.simple_form>
         </div>
       </div>
     </div>
     """
-  end
-
-  def handle_event("create_game", %{"name" => _name}, socket) do
-    game_code = Utils.generate_game_code()
-    {:ok, _pid} = Supervisor.start_game(game_code)
-
-    {:noreply, socket}
   end
 
   def mount(_params, _session, socket) do

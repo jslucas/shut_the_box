@@ -18,6 +18,9 @@ defmodule ShutTheBoxWeb.Router do
     pipe_through :browser
 
     live "/", HomeLive
+    live "/game/:game_code", GameLive
+
+    post "/game/create", GameController, :create
   end
 
   # Other scopes may use custom stacks.
