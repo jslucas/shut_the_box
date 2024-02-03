@@ -9,7 +9,11 @@ defmodule ShutTheBoxWeb.GameLive do
     """
   end
 
-  def mount(_params, %{"player_id" => player_id} = session, socket) do
-    {:ok, assign(socket, :player_id, player_id), layout: false}
+  def mount(_params, %{"player_id" => player_id} = _session, socket) do
+    {:ok, assign(socket, :player_id, player_id)}
+  end
+
+  def mount(_params, _session, socket) do
+    {:ok, assign(socket, :player_id, "Spectator")}
   end
 end

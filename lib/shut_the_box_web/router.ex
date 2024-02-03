@@ -21,6 +21,7 @@ defmodule ShutTheBoxWeb.Router do
     live "/game/:game_code", GameLive
 
     post "/game/create", GameController, :create
+    post "/game/join", GameController, :join
   end
 
   # Other scopes may use custom stacks.

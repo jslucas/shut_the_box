@@ -19,12 +19,21 @@ defmodule ShutTheBoxWeb.HomeLive do
           </svg>
         </div>
       </div>
-      <div class="bg-white shadow-lg mx-auto max-w-3xl pb-6 ">
+      <div class="bg-white mx-auto max-w-3xl pb-6">
         <div class="mx-auto max-w-xl">
           <.simple_form for={@form} phx-update="ignore" action={~p"/game/create"}>
             <.input field={@form[:name]} label="Name" required />
             <:actions>
               <.button phx-disable-with="Creating game...">Create Game</.button>
+            </:actions>
+          </.simple_form>
+        </div>
+        <div class="mx-auto max-w-xl">
+          <.simple_form for={@form} phx-update="ignore" action={~p"/game/join"}>
+            <.input field={@form[:name]} label="Name" required />
+            <.input field={@form[:game_code]} label="Game Code" required />
+            <:actions>
+              <.button phx-disable-with="Joining game...">Join Game</.button>
             </:actions>
           </.simple_form>
         </div>

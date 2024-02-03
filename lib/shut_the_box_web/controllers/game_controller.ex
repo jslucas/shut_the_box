@@ -10,6 +10,17 @@ defmodule ShutTheBoxWeb.GameController do
     # {:ok, _} = Server.add_player(player)
 
     conn
+    |> clear_session()
+    |> put_session(:player_id, player.id)
+    |> put_flash(:info, "Welcome, #{player.name}!")
+    |> redirect(to: ~p"/game/#{game_code}")
+  end
+
+  def join(conn, %{"name" => name, "game_code" => game_code} = params) do
+    player = Player.new(name)
+
+    conn
+    |> clear_session()
     |> put_session(:player_id, player.id)
     |> put_flash(:info, "Welcome, #{player.name}!")
     |> redirect(to: ~p"/game/#{game_code}")
