@@ -1,5 +1,5 @@
 defmodule ShutTheBoxWeb.GameLive do
-  alias ShutTheBoxWeb.{ControlsComponent, Endpoint, PlayersComponent}
+  alias ShutTheBoxWeb.{ControlsComponent, Endpoint, PlayersComponent, TilesComponent}
   alias ShutTheBox.Game.Server
   use ShutTheBoxWeb, :live_view
 
@@ -16,11 +16,14 @@ defmodule ShutTheBoxWeb.GameLive do
 
     {:ok, game} = Server.get_game(game_code)
 
+    player = Enum.find(game.players, &(&1.id == socket.private[:player_id]))
+
     {
       :noreply,
       socket
       |> assign(:game, game)
       |> assign(:game_code, game_code)
+      |> assign(:player, player)
     }
   end
 
@@ -43,8 +46,9 @@ defmodule ShutTheBoxWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <div class="grid">
+    <div class="grid grid-cols-1">
       <.live_component module={PlayersComponent} id="players-component" players={@game.players} />
+      <.live_component module={TilesComponent} id="tiles-component" tiles={@player.tiles} />
       <.live_component
         module={ControlsComponent}
         id="controls-component"
