@@ -6,7 +6,9 @@ defmodule ShutTheBox.Game.State do
   alias ShutTheBox.Game.Player
 
   defstruct game_code: nil,
-            players: []
+            players: [],
+            turn_order: nil,
+            turn: %{step: :waiting_to_start, player_id: nil}
 
   @type t :: %__MODULE__{
           game_code: String.t(),
@@ -21,5 +23,12 @@ defmodule ShutTheBox.Game.State do
   @spec add_player(State.t(), Player.t()) :: {:ok, t()}
   def add_player(game, player) do
     {:ok, update_in(game, [Access.key!(:players)], &[player | &1])}
+  end
+
+  def start_game(game) do
+    turn_order = Enum.map(game.players, & &1.id) |> Enum.shuffle()
+    turn = %{step: :roll, player_id: Enum.at(turn_order, 0)}
+
+    {:ok, Map.merge(game, %{turn_order: turn_order, turn: turn})}
   end
 end

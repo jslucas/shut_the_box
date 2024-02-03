@@ -14,4 +14,21 @@ defmodule ShutTheBox.Game.StateTest do
       assert [%Player{name: "2"}, %Player{name: "1"}] = game.players
     end
   end
+
+  describe ".start_game/1" do
+    test "sets turn order and updates turn" do
+      game = State.new("NICE-GAME")
+      player = Player.new("1")
+      player_id = player.id
+
+      assert {:ok, game} = State.add_player(game, player)
+      assert %{turn_order: nil, turn: %{step: :waiting_to_start, player_id: nil}} = game
+      assert {:ok, game} = State.start_game(game)
+
+      assert %{
+               turn_order: [^player_id],
+               turn: %{step: :roll, player_id: ^player_id}
+             } = game
+    end
+  end
 end

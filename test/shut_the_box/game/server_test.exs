@@ -15,7 +15,17 @@ defmodule ShutTheBox.Game.ServerTest do
       player = Player.new("p1")
 
       {:ok, _} = Server.add_player(game_code, player)
-      {:ok, %{players: [player]}} = Server.get_game(game_code)
+      {:ok, %{players: [^player]}} = Server.get_game(game_code)
+    end
+  end
+
+  describe "start_game/1" do
+    test "updates turn_order and turn", %{game_code: game_code} do
+      player = Player.new("p1")
+
+      {:ok, _} = Server.add_player(game_code, player)
+      {:ok, _} = Server.start_game(game_code)
+      assert {:ok, %{turn_order: [_], turn: %{step: :roll}}} = Server.get_game(game_code)
     end
   end
 end

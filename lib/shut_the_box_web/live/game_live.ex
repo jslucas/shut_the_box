@@ -1,6 +1,6 @@
 defmodule ShutTheBoxWeb.GameLive do
+  alias ShutTheBoxWeb.{ControlsComponent, Endpoint, PlayersComponent}
   alias ShutTheBox.Game.Server
-  alias ShutTheBoxWeb.Endpoint
   use ShutTheBoxWeb, :live_view
 
   def mount(_params, %{"player_id" => player_id} = _session, socket) do
@@ -14,26 +14,43 @@ defmodule ShutTheBoxWeb.GameLive do
   def handle_params(%{"game_code" => game_code}, _uri, socket) do
     if connected?(socket), do: Endpoint.subscribe("game:#{game_code}")
 
-    {:ok, %{players: players}} = Server.get_game(game_code)
+    {:ok, game} = Server.get_game(game_code)
 
-    {:noreply, assign(socket, :players, players)}
+    {
+      :noreply,
+      socket
+      |> assign(:game, game)
+      |> assign(:game_code, game_code)
+    }
   end
 
   def handle_info(%{event: "players_updated", payload: %{players: players}}, socket) do
-    {:noreply, assign(socket, :players, players)}
+    {:noreply, update(socket, :game, &%{&1 | players: players})}
+  end
+
+  def handle_info(
+        %{event: "game_started", payload: %{turn_order: turn_order, turn: turn}},
+        socket
+      ) do
+    {:noreply, update(socket, :game, &%{&1 | turn_order: turn_order, turn: turn})}
+  end
+
+  def handle_event("start_game", _params, socket) do
+    {:ok, _} = Server.start_game(socket.assigns.game_code)
+
+    {:noreply, socket}
   end
 
   def render(assigns) do
     ~H"""
-    <div>
-      GAME LIVE
-      <p>
-        player_id: <%= @socket.private[:player_id] %>
-      </p>
-
-      <%= for p <- @players do %>
-        <p><%= p.name %></p>
-      <% end %>
+    <div class="grid">
+      <.live_component module={PlayersComponent} id="players-component" players={@game.players} />
+      <.live_component
+        module={ControlsComponent}
+        id="controls-component"
+        turn={@game.turn}
+        player_id={@socket.private[:player_id]}
+      />
     </div>
     """
   end
