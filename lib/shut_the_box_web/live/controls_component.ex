@@ -23,8 +23,14 @@ defmodule ShutTheBoxWeb.ControlsComponent do
             <.button phx-click="roll">Roll</.button>
           <% end %>
         <% end %>
-        <%= if @turn.step == :close_tiles && !Enum.empty?(@tiles_to_close) do %>
-          <.button phx-click="close_tiles">Close tiles</.button>
+        <%= if @turn.step == :close_tiles do %>
+          <%= if Enum.empty?(@tiles_to_close) do %>
+            <.button phx-click="close_tiles" class="bg-gray-500 text-gray-300" disabled>
+              Close tiles
+            </.button>
+          <% else %>
+            <.button phx-click="close_tiles">Close tiles</.button>
+          <% end %>
         <% end %>
       </div>
     </div>

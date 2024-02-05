@@ -33,15 +33,23 @@ defmodule ShutTheBox.Game.Turn do
 
   @spec close_tiles(t(), list(integer())) :: t()
   def close_tiles(turn, tiles_to_close) do
-    tiles =
-      for {num, is_open} <- turn.tiles, into: %{} do
-        if Enum.member?(tiles_to_close, num) do
-          {num, false}
-        else
-          {num, is_open}
-        end
-      end
+    closing_tiles_that_are_already_closed =
+      Enum.filter(turn.tiles, fn {_num, is_open} -> !is_open end)
+      |> Enum.member?(tiles_to_close)
 
-    Map.merge(turn, %{step: next(turn.step), tiles: tiles})
+    unless closing_tiles_that_are_already_closed do
+      tiles =
+        for {num, is_open} <- turn.tiles, into: %{} do
+          if Enum.member?(tiles_to_close, num) do
+            {num, false}
+          else
+            {num, is_open}
+          end
+        end
+
+      {:ok, Map.merge(turn, %{step: next(turn.step), tiles: tiles})}
+    else
+      {:error, "Invalid tile selection"}
+    end
   end
 end
