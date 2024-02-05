@@ -78,9 +78,9 @@ defmodule ShutTheBox.Game.Server do
   end
 
   def handle_call({:close_tiles, tiles_to_close}, _from, state) do
-    state = State.close_tiles(state, tiles_to_close)
+    result = State.close_tiles(state, tiles_to_close)
 
-    {:reply, {:ok, state}, state}
+    {:reply, result, state}
   end
 
   def publish_players_updated({:ok, state} = result) do
@@ -104,6 +104,10 @@ defmodule ShutTheBox.Game.Server do
 
   def publish_turn_updated({:ok, state} = result) do
     Endpoint.broadcast("game:#{state.game_code}", "turn_updated", %{turn: state.turn})
+    result
+  end
+
+  def publish_turn_updated({:error, _} = result) do
     result
   end
 

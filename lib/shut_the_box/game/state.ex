@@ -45,7 +45,13 @@ defmodule ShutTheBox.Game.State do
     Map.merge(game, %{roll: roll, turn: Turn.next_step(game.turn)})
   end
 
+  @spec close_tiles(t(), list(integer())) :: {:ok, t()} | {:error, t(), String.t()}
   def close_tiles(game, tiles_to_close) do
-    Map.put(game, :turn, Turn.close_tiles(game.turn, tiles_to_close))
+    with {:ok, turn} <- Turn.close_tiles(game.turn, tiles_to_close),
+         true <- Enum.sum(tiles_to_close) == Enum.sum(game.roll) do
+      {:ok, Map.put(game, :turn, turn)}
+    else
+      _ -> {:error, "Invalid tile selection"}
+    end
   end
 end

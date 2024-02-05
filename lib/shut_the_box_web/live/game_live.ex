@@ -47,6 +47,13 @@ defmodule ShutTheBoxWeb.GameLive do
     {:noreply, update(socket, :game, &%{&1 | turn: turn})}
   end
 
+  def handle_info(
+        %{event: "error_tile_selection", payload: %{error_message: error_message}},
+        socket
+      ) do
+    {:noreply, assign(socket, :error, error_message)}
+  end
+
   def handle_event("start_game", _params, socket) do
     {:ok, _} = Server.start_game(socket.assigns.game_code)
 
@@ -74,9 +81,13 @@ defmodule ShutTheBoxWeb.GameLive do
 
   def handle_event("close_tiles", _params, socket) do
     tiles_to_close = Enum.map(socket.assigns.tiles_to_close, &String.to_integer/1)
-    {:ok, _} = Server.close_tiles(socket.assigns.game_code, tiles_to_close)
 
-    {:noreply, socket}
+    with {:ok, _} <- Server.close_tiles(socket.assigns.game_code, tiles_to_close) do
+      {:noreply, socket}
+    else
+      {:error, message} ->
+        {:noreply, put_flash(socket, :error, message)}
+    end
   end
 
   def render(assigns) do
