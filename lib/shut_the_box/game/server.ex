@@ -34,6 +34,13 @@ defmodule ShutTheBox.Game.Server do
     |> publish_game_started()
   end
 
+  def roll(game_code) do
+    game_pid = GenServer.whereis({:global, game_code})
+
+    GenServer.call(game_pid, {:roll})
+    |> publish_roll_updated()
+  end
+
   # GenServer Callbacks
 
   def init(game_code) do
@@ -56,6 +63,12 @@ defmodule ShutTheBox.Game.Server do
     {:reply, {:ok, state}, state}
   end
 
+  def handle_call({:roll}, _from, state) do
+    {:ok, state} = State.roll(state)
+
+    {:reply, {:ok, state}, state}
+  end
+
   def publish_players_updated({:ok, state} = result) do
     Endpoint.broadcast("game:#{state.game_code}", "players_updated", %{players: state.players})
     result
@@ -67,6 +80,11 @@ defmodule ShutTheBox.Game.Server do
       turn: state.turn
     })
 
+    result
+  end
+
+  def publish_roll_updated({:ok, state} = result) do
+    Endpoint.broadcast("game:#{state.game_code}", "roll_updated", %{roll: state.roll})
     result
   end
 

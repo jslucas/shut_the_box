@@ -31,4 +31,12 @@ defmodule ShutTheBox.Game.StateTest do
              } = game
     end
   end
+
+  describe ".roll/1" do
+    test "sets roll" do
+      assert {:ok, %{roll: [die1, die2]}} = State.roll(%State{})
+      assert Enum.member?(1..6, die1)
+      assert Enum.member?(1..6, die2)
+    end
+  end
 end

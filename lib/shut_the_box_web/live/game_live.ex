@@ -38,8 +38,18 @@ defmodule ShutTheBoxWeb.GameLive do
     {:noreply, update(socket, :game, &%{&1 | turn_order: turn_order, turn: turn})}
   end
 
+  def handle_info(%{event: "roll_updated", payload: %{roll: roll}}, socket) do
+    {:noreply, update(socket, :game, &%{&1 | roll: roll})}
+  end
+
   def handle_event("start_game", _params, socket) do
     {:ok, _} = Server.start_game(socket.assigns.game_code)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("roll", _params, socket) do
+    {:ok, _} = Server.roll(socket.assigns.game_code)
 
     {:noreply, socket}
   end
@@ -52,6 +62,7 @@ defmodule ShutTheBoxWeb.GameLive do
       <.live_component
         module={ControlsComponent}
         id="controls-component"
+        roll={@game.roll}
         turn={@game.turn}
         player_id={@socket.private[:player_id]}
       />

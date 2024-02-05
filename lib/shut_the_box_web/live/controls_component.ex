@@ -10,12 +10,17 @@ defmodule ShutTheBoxWeb.ControlsComponent do
     ~H"""
     <div class="grid grid-rows-1">
       <div class="mx-auto">
+        <%= unless Enum.empty?(@roll) do %>
+          <div>
+            <p><%= Enum.at(@roll, 0) %>, <%= Enum.at(@roll, 1) %></p>
+          </div>
+        <% end %>
         <%= if @turn.step == :waiting_to_start do %>
           <.button phx-disable-with="Starting..." phx-click="start_game">Start Game</.button>
         <% end %>
         <%= if @turn.player_id == @player_id do %>
           <%= if @turn.step == :roll do %>
-            <.button phx-disable-with="Rolling..." phx-click="roll">Roll</.button>
+            <.button phx-click="roll">Roll</.button>
           <% end %>
         <% end %>
       </div>

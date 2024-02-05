@@ -8,11 +8,15 @@ defmodule ShutTheBox.Game.State do
   defstruct game_code: nil,
             players: [],
             turn_order: nil,
-            turn: %{step: :waiting_to_start, player_id: nil}
+            turn: %{step: :waiting_to_start, player_id: nil},
+            roll: []
 
   @type t :: %__MODULE__{
           game_code: String.t(),
-          players: list(Player.t())
+          players: list(Player.t()),
+          turn_order: list(String.t()) | nil,
+          turn: map(),
+          roll: list(integer())
         }
 
   @spec new(String.t()) :: t()
@@ -30,5 +34,11 @@ defmodule ShutTheBox.Game.State do
     turn = %{step: :roll, player_id: Enum.at(turn_order, 0)}
 
     {:ok, Map.merge(game, %{turn_order: turn_order, turn: turn})}
+  end
+
+  def roll(game) do
+    roll = [:rand.uniform(6), :rand.uniform(6)]
+
+    {:ok, Map.merge(game, %{roll: roll})}
   end
 end
