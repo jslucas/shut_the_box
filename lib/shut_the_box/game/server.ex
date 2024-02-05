@@ -42,6 +42,13 @@ defmodule ShutTheBox.Game.Server do
     |> publish_turn_updated()
   end
 
+  def close_tiles(game_code, tiles_to_close) do
+    game_pid = GenServer.whereis({:global, game_code})
+
+    GenServer.call(game_pid, {:close_tiles, tiles_to_close})
+    |> publish_turn_updated()
+  end
+
   # GenServer Callbacks
 
   def init(game_code) do
@@ -66,6 +73,12 @@ defmodule ShutTheBox.Game.Server do
 
   def handle_call({:roll}, _from, state) do
     state = State.roll(state)
+
+    {:reply, {:ok, state}, state}
+  end
+
+  def handle_call({:close_tiles, tiles_to_close}, _from, state) do
+    state = State.close_tiles(state, tiles_to_close)
 
     {:reply, {:ok, state}, state}
   end

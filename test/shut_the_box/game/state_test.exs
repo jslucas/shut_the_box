@@ -39,4 +39,22 @@ defmodule ShutTheBox.Game.StateTest do
       assert Enum.member?(1..6, die2)
     end
   end
+
+  describe ".close_tiles/2" do
+    test "updates the input tiles to false" do
+      %{turn: %{tiles: tiles}} = State.new("NICE-GAME") |> State.close_tiles([1, 2, 3])
+
+      assert %{
+               1 => false,
+               2 => false,
+               3 => false,
+               4 => true,
+               5 => true,
+               6 => true,
+               7 => true,
+               8 => true,
+               9 => true
+             } = tiles
+    end
+  end
 end

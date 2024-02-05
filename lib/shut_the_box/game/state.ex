@@ -44,4 +44,8 @@ defmodule ShutTheBox.Game.State do
 
     Map.merge(game, %{roll: roll, turn: Turn.next_step(game.turn)})
   end
+
+  def close_tiles(game, tiles_to_close) do
+    Map.put(game, :turn, Turn.close_tiles(game.turn, tiles_to_close))
+  end
 end

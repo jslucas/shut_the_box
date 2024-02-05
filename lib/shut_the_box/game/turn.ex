@@ -22,7 +22,7 @@ defmodule ShutTheBox.Game.Turn do
     Map.put(turn, :player_id, id)
   end
 
-  @spec next_step(term()) :: t()
+  @spec next_step(t()) :: t()
   def next_step(turn) do
     Map.put(turn, :step, next(turn.step))
   end
@@ -30,4 +30,18 @@ defmodule ShutTheBox.Game.Turn do
   defp next(:waiting_to_start), do: :roll
   defp next(:roll), do: :close_tiles
   defp next(:close_tiles), do: :roll
+
+  @spec close_tiles(t(), list(integer())) :: t()
+  def close_tiles(turn, tiles_to_close) do
+    tiles =
+      for {num, is_open} <- turn.tiles, into: %{} do
+        if Enum.member?(tiles_to_close, num) do
+          {num, false}
+        else
+          {num, is_open}
+        end
+      end
+
+    Map.merge(turn, %{step: next(turn.step), tiles: tiles})
+  end
 end
