@@ -72,6 +72,13 @@ defmodule ShutTheBoxWeb.GameLive do
     {:noreply, assign(socket, :tiles_to_close, tiles_to_close)}
   end
 
+  def handle_event("close_tiles", _params, socket) do
+    tiles_to_close = Enum.map(socket.assigns.tiles_to_close, &String.to_integer/1)
+    {:ok, _} = Server.close_tiles(socket.assigns.game_code, tiles_to_close)
+
+    {:noreply, socket}
+  end
+
   def render(assigns) do
     ~H"""
     <div class="grid grid-cols-1">
@@ -89,6 +96,7 @@ defmodule ShutTheBoxWeb.GameLive do
         roll={@game.roll}
         turn={@game.turn}
         player_id={@socket.private[:player_id]}
+        tiles_to_close={@tiles_to_close}
       />
     </div>
     """
