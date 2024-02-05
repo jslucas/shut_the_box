@@ -24,6 +24,7 @@ defmodule ShutTheBoxWeb.GameLive do
       |> assign(:game, game)
       |> assign(:game_code, game_code)
       |> assign(:player, player)
+      |> assign(:tiles_to_close, [])
     }
   end
 
@@ -42,6 +43,10 @@ defmodule ShutTheBoxWeb.GameLive do
     {:noreply, update(socket, :game, &%{&1 | roll: roll})}
   end
 
+  def handle_info(%{event: "turn_updated", payload: %{turn: turn}}, socket) do
+    {:noreply, update(socket, :game, &%{&1 | turn: turn})}
+  end
+
   def handle_event("start_game", _params, socket) do
     {:ok, _} = Server.start_game(socket.assigns.game_code)
 
@@ -54,11 +59,30 @@ defmodule ShutTheBoxWeb.GameLive do
     {:noreply, socket}
   end
 
+  def handle_event("toggle_to_close", %{"tile" => tile}, socket) do
+    current = socket.assigns.tiles_to_close
+
+    tiles_to_close =
+      if Enum.member?(current, tile) do
+        Enum.reject(current, fn t -> to_string(t) == tile end)
+      else
+        [tile | current]
+      end
+
+    {:noreply, assign(socket, :tiles_to_close, tiles_to_close)}
+  end
+
   def render(assigns) do
     ~H"""
     <div class="grid grid-cols-1">
       <.live_component module={PlayersComponent} id="players-component" players={@game.players} />
-      <.live_component module={TilesComponent} id="tiles-component" tiles={@game.turn.tiles} />
+      <.live_component
+        module={TilesComponent}
+        id="tiles-component"
+        turn={@game.turn}
+        tiles={@game.turn.tiles}
+        tiles_to_close={@tiles_to_close}
+      />
       <.live_component
         module={ControlsComponent}
         id="controls-component"

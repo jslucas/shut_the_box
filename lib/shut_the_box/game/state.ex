@@ -42,6 +42,6 @@ defmodule ShutTheBox.Game.State do
   def roll(game) do
     roll = [:rand.uniform(6), :rand.uniform(6)]
 
-    Map.merge(game, %{roll: roll})
+    Map.merge(game, %{roll: roll, turn: Turn.next_step(game.turn)})
   end
 end
