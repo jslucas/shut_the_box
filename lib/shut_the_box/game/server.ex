@@ -39,6 +39,7 @@ defmodule ShutTheBox.Game.Server do
 
     GenServer.call(game_pid, {:roll})
     |> publish_roll_updated()
+    |> publish_turn_updated()
   end
 
   # GenServer Callbacks
@@ -85,6 +86,11 @@ defmodule ShutTheBox.Game.Server do
 
   def publish_roll_updated({:ok, state} = result) do
     Endpoint.broadcast("game:#{state.game_code}", "roll_updated", %{roll: state.roll})
+    result
+  end
+
+  def publish_turn_updated({:ok, state} = result) do
+    Endpoint.broadcast("game:#{state.game_code}", "turn_updated", %{turn: state.turn})
     result
   end
 
