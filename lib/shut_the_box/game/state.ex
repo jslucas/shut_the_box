@@ -3,19 +3,19 @@ defmodule ShutTheBox.Game.State do
   The game struct and interfaces for changing it
   """
 
-  alias ShutTheBox.Game.Player
+  alias ShutTheBox.Game.{Player, Turn}
 
   defstruct game_code: nil,
             players: [],
             turn_order: nil,
-            turn: %{step: :waiting_to_start, player_id: nil},
+            turn: Turn.new(),
             roll: []
 
   @type t :: %__MODULE__{
           game_code: String.t(),
           players: list(Player.t()),
           turn_order: list(String.t()) | nil,
-          turn: map(),
+          turn: Turn.t(),
           roll: list(integer())
         }
 
@@ -32,7 +32,8 @@ defmodule ShutTheBox.Game.State do
   @spec start_game(State.t()) :: t()
   def start_game(game) do
     turn_order = Enum.map(game.players, & &1.id) |> Enum.shuffle()
-    turn = %{step: :roll, player_id: Enum.at(turn_order, 0)}
+
+    turn = Turn.next_step(game.turn) |> Turn.update_player_id(Enum.at(turn_order, 0))
 
     Map.merge(game, %{turn_order: turn_order, turn: turn})
   end
