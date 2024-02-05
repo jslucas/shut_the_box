@@ -52,19 +52,19 @@ defmodule ShutTheBox.Game.Server do
   end
 
   def handle_call({:add_player, player}, _from, state) do
-    {:ok, state} = State.add_player(state, player)
+    state = State.add_player(state, player)
 
     {:reply, {:ok, state}, state}
   end
 
   def handle_call({:start_game}, _from, state) do
-    {:ok, state} = State.start_game(state)
+    state = State.start_game(state)
 
     {:reply, {:ok, state}, state}
   end
 
   def handle_call({:roll}, _from, state) do
-    {:ok, state} = State.roll(state)
+    state = State.roll(state)
 
     {:reply, {:ok, state}, state}
   end
