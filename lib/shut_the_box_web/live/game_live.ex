@@ -58,7 +58,7 @@ defmodule ShutTheBoxWeb.GameLive do
     ~H"""
     <div class="grid grid-cols-1">
       <.live_component module={PlayersComponent} id="players-component" players={@game.players} />
-      <.live_component module={TilesComponent} id="tiles-component" tiles={@player.tiles} />
+      <.live_component module={TilesComponent} id="tiles-component" tiles={@game.turn.tiles} />
       <.live_component
         module={ControlsComponent}
         id="controls-component"
