@@ -19,6 +19,11 @@ defmodule ShutTheBox.Game.State do
           roll: list(integer())
         }
 
+  @spec new(t()) :: t()
+  def new(args) when is_map(args) do
+    Map.merge(struct!(__MODULE__), args)
+  end
+
   @spec new(String.t()) :: t()
   def new(game_code) do
     struct!(__MODULE__, game_code: game_code)
