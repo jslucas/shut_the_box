@@ -44,7 +44,12 @@ defmodule ShutTheBoxWeb.GameLive do
   end
 
   def handle_info(%{event: "turn_updated", payload: %{turn: turn}}, socket) do
-    {:noreply, update(socket, :game, &%{&1 | turn: turn})}
+    {
+      :noreply,
+      socket
+      |> update(:game, &%{&1 | turn: turn})
+      |> assign(:tiles_to_close, [])
+    }
   end
 
   def handle_info(
