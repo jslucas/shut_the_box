@@ -33,16 +33,19 @@ defmodule ShutTheBox.Game.StateTest do
   end
 
   describe ".roll/1" do
-    test "sets roll" do
-      assert %{roll: [die1, die2]} = State.roll(%State{})
+    test "sets roll and updates turn step to close tiles" do
+      assert %{roll: [die1, die2], turn: %{step: :close_tiles}} =
+               State.roll(%State{turn: %{step: :roll}})
+
       assert Enum.member?(1..6, die1)
       assert Enum.member?(1..6, die2)
     end
   end
 
   describe ".close_tiles/2" do
-    test "updates the input tiles to false" do
-      %{turn: %{tiles: tiles}} = State.new("NICE-GAME") |> State.close_tiles([1, 2, 3])
+    test "updates the input tiles to false and sets turn step to roll" do
+      {:ok, %{turn: %{tiles: tiles, step: :roll}}} =
+        State.new(%{roll: [3, 3]}) |> State.close_tiles([1, 2, 3])
 
       assert %{
                1 => false,
@@ -55,6 +58,18 @@ defmodule ShutTheBox.Game.StateTest do
                8 => true,
                9 => true
              } = tiles
+    end
+
+    test "returns error if trying to close tiles that are not open" do
+      {:error, "Invalid tile selection"} =
+        State.new(%{roll: [1], turn: %{step: :close_tiles, tiles: %{1 => false}}})
+        |> State.close_tiles([1])
+    end
+
+    test "returns error if the sum of tiles being closed does not match the sum of roll" do
+      {:error, "Invalid tile selection"} =
+        State.new(%{roll: [1], turn: %{step: :close_tiles, tiles: %{1 => true, 2 => true}}})
+        |> State.close_tiles([2])
     end
   end
 end

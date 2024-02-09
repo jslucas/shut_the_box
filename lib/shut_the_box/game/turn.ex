@@ -31,11 +31,10 @@ defmodule ShutTheBox.Game.Turn do
   defp next(:roll), do: :close_tiles
   defp next(:close_tiles), do: :roll
 
-  @spec close_tiles(t(), list(integer())) :: t()
+  @spec close_tiles(t(), list(integer())) :: {:ok, t()} | {:error, String.t()}
   def close_tiles(turn, tiles_to_close) do
     closing_tiles_that_are_already_closed =
-      Enum.filter(turn.tiles, fn {_num, is_open} -> !is_open end)
-      |> Enum.member?(tiles_to_close)
+      Enum.any?(tiles_to_close, fn to_close -> !turn.tiles[to_close] end)
 
     unless closing_tiles_that_are_already_closed do
       tiles =

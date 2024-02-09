@@ -11,7 +11,7 @@ defmodule ShutTheBoxWeb.ControlsComponent do
     <div class="grid grid-rows-1">
       <div class="mx-auto">
         <%= unless Enum.empty?(@roll) do %>
-          <div>
+          <div data-test="roll">
             <p><%= Enum.at(@roll, 0) %>, <%= Enum.at(@roll, 1) %></p>
           </div>
         <% end %>

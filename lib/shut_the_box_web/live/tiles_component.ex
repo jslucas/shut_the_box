@@ -12,6 +12,7 @@ defmodule ShutTheBoxWeb.TilesComponent do
         <div
           phx-click={if @turn.step == :close_tiles && is_open, do: "toggle_to_close"}
           phx-value-tile={num}
+          data-test={"#{num}-tile"}
           class="bg-yellow-600/50 border-2 border-yellow-800/20 w-full min-w-28 h-28 relative"
         >
           <div class="absolute inset-x-0 top-0">
