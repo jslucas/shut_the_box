@@ -78,9 +78,12 @@ defmodule ShutTheBox.Game.Server do
   end
 
   def handle_call({:close_tiles, tiles_to_close}, _from, state) do
-    result = State.close_tiles(state, tiles_to_close)
-
-    {:reply, result, state}
+    with {:ok, new_state} = result <- State.close_tiles(state, tiles_to_close) do
+      {:reply, result, new_state}
+    else
+      {:error, _} = result ->
+        {:reply, result, state}
+    end
   end
 
   def publish_players_updated({:ok, state} = result) do
