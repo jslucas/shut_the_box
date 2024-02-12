@@ -1,4 +1,5 @@
 defmodule ShutTheBoxWeb.GameLiveTest do
+  alias ShutTheBox.Game.Validation
   use ShutTheBoxWeb.ConnCase, async: true
   import Phoenix.LiveViewTest
 
@@ -43,14 +44,7 @@ defmodule ShutTheBoxWeb.GameLiveTest do
       assert_receive %{topic: ^topic, event: "roll_updated", payload: %{roll: roll}}
       assert_receive %{topic: ^topic, event: "turn_updated", payload: _}
 
-      # TODO: Time to write a util
-      to_close =
-        case Enum.sum(roll) do
-          12 -> [2, 4, 6]
-          11 -> [1, 4, 6]
-          10 -> [1, 4, 5]
-          _ -> [Enum.sum(roll)]
-        end
+      to_close = Validation.all_tile_combinations(roll) |> Enum.at(0)
 
       for num <- to_close do
         view |> element("[data-test=#{num}-tile]") |> render_click()

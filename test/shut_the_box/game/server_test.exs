@@ -3,7 +3,7 @@ defmodule ShutTheBox.Game.ServerTest do
 
   alias ShutTheBoxWeb.Endpoint
   alias ShutTheBox.Game.Player
-  alias ShutTheBox.Game.{Server, Utils}
+  alias ShutTheBox.Game.{Player, Server, Utils, Validation}
 
   setup do
     game_code = Utils.generate_game_code()
@@ -57,16 +57,7 @@ defmodule ShutTheBox.Game.ServerTest do
       Server.start_game(game_code)
       {:ok, %{roll: roll}} = Server.roll(game_code)
 
-      # TODO: Could use a util to backtrack and find valid combinations
-      # > valid_combinations(tiles, roll)
-      # > [[1,3], [2,2]]
-      to_close =
-        case Enum.sum(roll) do
-          12 -> [2, 4, 6]
-          11 -> [1, 4, 6]
-          10 -> [1, 4, 5]
-          _ -> [Enum.sum(roll)]
-        end
+      to_close = Validation.all_tile_combinations(roll) |> Enum.at(0)
 
       assert {:ok, _} = Server.close_tiles(game_code, to_close)
 

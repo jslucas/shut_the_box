@@ -51,4 +51,9 @@ defmodule ShutTheBox.Game.Turn do
       {:error, "Invalid tile selection"}
     end
   end
+
+  @spec open_tiles(t()) :: list(Integer)
+  def open_tiles(turn) do
+    Map.reject(turn.tiles, fn {_num, is_open} -> !is_open end) |> Map.keys()
+  end
 end
